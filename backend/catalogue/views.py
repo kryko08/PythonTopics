@@ -1,11 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import (
     ListView,
-    DetailView,
 )
 
 from .models import PythonTopic
 from .forms import PythonTopicForm
+
+from random import randint
+
 
 class PythonTopicsListView(ListView):
     queryset = PythonTopic.objects.order_by("-last_edit")
@@ -51,7 +53,27 @@ def update_python_topic_view(request, pk=None):
         )
 
 
-class PythonTopicsDetailView(DetailView):
-    pass
+def python_topic_detail_view(request, pk=None):
+    python_topic = get_object_or_404(pk)
+    return render(
+        request,
+        "catalogue/topic-detail.html",
+        context={
+            "python_topic": python_topic,
+            }
+        )
 
+
+def python_topic_random_detail_view(request):
+    # Grab random object
+    num_topics = PythonTopic.objects.count()
+    random_ind = randint(0, num_topics - 1)
+    python_topic = get_object_or_404(random_ind)
+    return render(
+        request,
+        "catalogue/topic-detail.html",
+        context={
+            "python_topic": python_topic,
+            }
+        )
 
