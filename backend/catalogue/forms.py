@@ -1,10 +1,14 @@
-from django.forms import ModelForm
+from django.forms import ModelForm, Textarea
+from django import forms
 from .models import PythonTopic
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit
 
+from .validators import is_python_file_validator
+
 class PythonTopicForm(ModelForm):
+    python_file = forms.FileField(validators=[is_python_file_validator])
     class Meta:
         model = PythonTopic
         fields = [
@@ -12,6 +16,7 @@ class PythonTopicForm(ModelForm):
             "describtion",
             "python_file",
         ]
+
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
