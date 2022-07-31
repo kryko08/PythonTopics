@@ -3,7 +3,7 @@ venv/
 
 # Visual Studio code workspace settings 
 PythonTopics.code-workspace
-
+.vscode
 backend/catalogue/__pycache__
 backend/Topics/__pycache__
 
@@ -16,5 +16,8 @@ backend/catalogue/static
 
 # .DS_Store file
 .DS_Store
+
+# media
+backend/media
 
 
