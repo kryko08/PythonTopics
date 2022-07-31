@@ -8,6 +8,9 @@ from .forms import PythonTopicForm
 
 from random import randint
 
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+
 
 class PythonTopicsListView(ListView):
     queryset = PythonTopic.objects.order_by("-last_edit")
@@ -17,16 +20,18 @@ class PythonTopicsListView(ListView):
 
 def create_python_topic_view(request):
     if request.method == 'POST':
-        form = PythonTopicForm(request.POST)
+        form = PythonTopicForm(request.POST, request.FILES)
         if form.is_valid():
-            topic = form.save(commit=False)
-            # commit=False tells Django that "Don't send this to database yet.
-            # I have more things I want to do with it."
+            file = form.cleaned_data["python_file"]
+            topic = form.cleaned_data["topic_name"]
+            describtion = form.cleaned_data["describtion"]
+            user = request.user 
 
-            topic.user = request.user # Set the user object here
-            topic.save() # Now you can send it to DB
+            # Create object 
+            obj = PythonTopic(topic_name=topic, describtion=describtion, python_file=file, user=user)
+            obj.save() # Save object
 
-            return redirect("catalogue/topics_list.html")
+            return HttpResponseRedirect(reverse('topic-detail', kwargs={'pk': obj.id}))
     else:
         form = PythonTopicForm()
     return render(
@@ -54,10 +59,10 @@ def update_python_topic_view(request, pk=None):
 
 
 def python_topic_detail_view(request, pk=None):
-    python_topic = get_object_or_404(pk)
+    python_topic = get_object_or_404(PythonTopic, pk=pk)
     return render(
         request,
-        "catalogue/topic-detail.html",
+        "catalogue/topic_detail.html",
         context={
             "python_topic": python_topic,
             }
@@ -66,14 +71,15 @@ def python_topic_detail_view(request, pk=None):
 
 def python_topic_random_detail_view(request):
     # Grab random object
-    num_topics = PythonTopic.objects.count()
-    random_ind = randint(0, num_topics - 1)
-    python_topic = get_object_or_404(random_ind)
+    topic_ids = PythonTopic.objects.values_list("id", flat=True)
+    num_topic = len(topic_ids)
+    ind = randint(0, num_topic-1)
+    random_id = topic_ids[ind]
+    python_topic = get_object_or_404(PythonTopic, pk=random_id)
     return render(
         request,
-        "catalogue/topic-detail.html",
+        "catalogue/topic_detail.html",
         context={
             "python_topic": python_topic,
             }
         )
-
