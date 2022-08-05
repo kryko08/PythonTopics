@@ -1,3 +1,4 @@
+from ast import mod
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import (
     ListView,
@@ -11,6 +12,9 @@ from random import randint
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
+import inspect
+
+from Topics.settings import MEDIA_ROOT
 
 class PythonTopicsListView(ListView):
     queryset = PythonTopic.objects.order_by("-last_edit")
@@ -59,12 +63,35 @@ def update_python_topic_view(request, pk=None):
 
 
 def python_topic_detail_view(request, pk=None):
+    # Grab detail object
     python_topic = get_object_or_404(PythonTopic, pk=pk)
+
+    # Read code from .py file 
+    file_path = python_topic.python_file.path
+    # Import dependencies
+    import os
+    import sys
+    import importlib.util
+    import inspect
+
+    # Get module name
+    head, module_name = os.path.split(file_path)
+    module_name, ext = os.path.splitext(module_name)
+
+    # add file to sys
+    spec = importlib.util.spec_from_file_location(module_name, file_path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = module
+    spec.loader.exec_module(module)
+    source_code = inspect.getsourcelines(module.some_function)
+
     return render(
         request,
         "catalogue/topic_detail.html",
         context={
             "python_topic": python_topic,
+            "code": source_code
+
             }
         )
 
