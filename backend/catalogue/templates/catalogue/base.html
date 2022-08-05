@@ -1,65 +1,55 @@
 <!doctype html>
 <html lang="en">
   <head>
-  	<title>{% block title%}{%endblock%}</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	{% load static %}
-	<link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,700' rel='stylesheet' type='text/css'>
 
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-	
-	<link rel="stylesheet" href="{% static 'css/style.css' %}">
+  	<title>{% block title%}{%endblock%}</title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+   
+	{% load static %}
+	<link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
 
 	</head>
+
 	<body>
-	<div id="colorlib-page">
-		<a href="#" class="js-colorlib-nav-toggle colorlib-nav-toggle"><i></i></a>
-		<aside id="colorlib-aside" role="complementary" class="js-fullheight">
-			<nav id="colorlib-main-menu" role="navigation">
-				<ul>
-					<li class="colorlib-active"><a href="{% url 'topics-list' %}">Published Topics</a></li>
-					<li><a href="{% url 'create-topic' %}">Create Topic</a></li>
-					<li><a href="{% url 'topic-random' %}">See random</a></li>
-					{% if request.user.is_authenticated %}
-					<li><a href="#">Log out</a></li>
-					{% else %}
-					<li><a href="#">Log in</a></li>
-					{% endif %}
-				</ul>
-			</nav>
-		</aside> <!-- END COLORLIB-ASIDE -->
-		<div id="colorlib-main">
-			<section class="ftco-section pt-4 mb-5 ftco-intro">
-				<div class="container-fluid px-3 px-md-0">
-					<div class="row">
-						{%block main_body%}
-						<div class="col-md-12 mb-4">
-							<h1 class="h2">Website menu #09</h1>
-							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Atque est assumenda illum ratione nesciunt ullam non accusantium voluptas soluta veniam, quam, praesentium suscipit eos amet nisi natus nostrum, iusto expedita?</p>
+		<div>
+			<nav class="navbar navbar-expand-lg bg-light">
+				<div class="container-fluid">
+					<a class="navbar-brand" href="{% url "topic-list" %}">
+						Home
+					</a>
+						<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+							<span class="navbar-toggler-icon"></span>
+						</button>
+						<div class="collapse navbar-collapse" id="navbarText">
+							<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+								<li class="nav-item">
+									<a class="nav-link" aria-current="page" href="{% url "topic-create" %}">Create topic</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" href="{% url "topic-random" %}">See random</a>
+								</li>
+							</ul>
 						</div>
-						<div class="col-md-6">
-							<h2 class="h4">Heading Two</h2>
-							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Distinctio maxime nisi commodi consequuntur pariatur qui reprehenderit aperiam deserunt, impedit veniam sapiente voluptas minus, ipsum. Ipsum minima sunt provident! Esse, quae.</p>
+						<div class="collapse navbar-collapse" id="navbarText">
+							<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+								{% if request.user.is_authenticated %}
+								<li class="nav-item">
+									<a class="nav-link" href="#">Logout</a>
+								</li>
+								{%else%}
+								<li class="nav-item">
+									<a class="nav-link" href="#">Login</a>
+								</li>
+								{% endif %}
+							</ul>
 						</div>
-						<div class="col-md-6">
-							<h2 class="h4">Heading Two</h2>
-							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Distinctio maxime nisi commodi consequuntur pariatur qui reprehenderit aperiam deserunt, impedit veniam sapiente voluptas minus, ipsum. Ipsum minima sunt provident! Esse, quae.</p>
-						</div>
-						{%endblock%}
-					</div>
 				</div>
-			</section>
-		</div><!-- END COLORLIB-MAIN -->
-	</div><!-- END COLORLIB-PAGE -->
-
-	</section>
-
-	<script src="{% static 'js/jquery.min.js' %}"></script>
-  <script src="{% static 'js/popper.js' %}"></script>
-  <script src="{% static 'js/bootstrap.min.js' %}"></script>
-  <script src="{% static 'js/main.js' %}"></script>
-
+			</nav>
+			{%block main_body%}
+			{%endblock%}
+		</div>
 	</body>
 </html>
 
