@@ -12,8 +12,8 @@ from .views import (
 
 urlpatterns = [
     path('topics/', include([
-        path('', PythonTopicsListView.as_view(), name="topics-list"),
-        path('create/', create_python_topic_view, name="create-topic"),
+        path('', PythonTopicsListView.as_view(), name="topic-list"),
+        path('create/', create_python_topic_view, name="topic-create"),
         path('<int:pk>/detail/', python_topic_detail_view, name="topic-detail"),
         path('<int:pk>/update/', update_python_topic_view, name="topic-update"),
         path("random_topic", python_topic_random_detail_view, name="topic-random")
