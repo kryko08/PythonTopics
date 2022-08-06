@@ -1,0 +1,15 @@
+{%extends 'catalogue/base.html'%}
+{%block title%}Login{% endblock %}
+{%block main_body%}
+{%load crispy_forms_tags%}
+<div class="container-fluid">
+    <form method="post">
+    {% csrf_token %}
+        {{form|crispy}}
+        <button type="submit" class="btn btn-success">Submit</button>  
+    </form>
+    <br/>
+    <br/>
+    <p>Don't have account yet? Create one <a href="{% url "sign-up"%}">here</a>!</p>
+</div>
+{% endblock %}
