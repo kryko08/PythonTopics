@@ -1,11 +1,16 @@
-from django.forms import ModelForm, Textarea
+from django.forms import ModelForm
 from django import forms
-from .models import PythonTopic
+
+from django.contrib.auth.forms import (
+    UserCreationForm,
+)
+from django.contrib.auth.models import User
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit
 
 from .validators import is_python_file_validator
+from .models import PythonTopic
 
 class PythonTopicForm(ModelForm):
     python_file = forms.FileField(validators=[is_python_file_validator])
@@ -27,3 +32,16 @@ class PythonTopicForm(ModelForm):
             "python_file",
             Submit('submit', 'Submit', css_class='button white'),
         )
+
+
+class CustomUserRegistrationForm(UserCreationForm):
+    email = forms.EmailField(required=True)
+    
+    class Meta:
+        model = User
+        fields = [
+            "username",
+            "email",
+            "password1",
+            "password2"
+        ]
