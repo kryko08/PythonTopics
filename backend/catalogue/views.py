@@ -1,20 +1,25 @@
-from ast import mod
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
+from django.http import Http404, HttpResponseRedirect
 from django.views.generic import (
     ListView,
 )
 
 from .models import PythonTopic
-from .forms import PythonTopicForm
-
-from random import randint
-
-from django.http import HttpResponseRedirect
-from django.urls import reverse
-
-import inspect
+from .forms import PythonTopicForm, CustomUserRegistrationForm
 
 from Topics.settings import MEDIA_ROOT
+
+from django.contrib.auth import login
+
+import os
+import sys
+import importlib.util
+import inspect
+import subprocess
+from random import randint
+from ast import mod
+
 
 class PythonTopicsListView(ListView):
     queryset = PythonTopic.objects.order_by("-last_edit")
@@ -26,6 +31,7 @@ def create_python_topic_view(request):
     if request.method == 'POST':
         form = PythonTopicForm(request.POST, request.FILES)
         if form.is_valid():
+
             file = form.cleaned_data["python_file"]
             topic = form.cleaned_data["topic_name"]
             describtion = form.cleaned_data["describtion"]
@@ -45,21 +51,23 @@ def create_python_topic_view(request):
         )
 
 
-def update_python_topic_view(request, pk=None):
-    topic = get_object_or_404(PythonTopic, pk)
-    if request.method == 'POST':
-        form = PythonTopicForm(request.POST, instance=topic)
-        if form.is_valid():
-            topic.save()
-            return redirect("catalogue/topics_list.html")
-    else:
-        form = PythonTopicForm(instance=topic)
-    return render(
-        request,
-        'catalogue/update_topic.html',
-        {"form": form,
-        "topic": topic}
-        )
+# def update_python_topic_view(request, pk=None):
+#     topic = get_object_or_404(PythonTopic, pk)
+#     if request.method == 'POST':
+#         form = PythonTopicForm(request.POST, instance=topic)
+#         if form.is_valid():
+#             topic.save()
+#             return redirect("catalogue/topics_list.html")
+
+#     else:
+#         form = PythonTopicForm(instance=topic)
+
+#     return render(
+#         request,
+#         'catalogue/update_topic.html',
+#         {"form": form,
+#         "topic": topic}
+#         )
 
 
 def python_topic_detail_view(request, pk=None):
@@ -68,12 +76,6 @@ def python_topic_detail_view(request, pk=None):
 
     # Read code from .py file 
     file_path = python_topic.python_file.path
-    # Import dependencies
-    import os
-    import sys
-    import importlib.util
-    import inspect
-
     # Get module name
     head, module_name = os.path.split(file_path)
     module_name, ext = os.path.splitext(module_name)
@@ -83,14 +85,16 @@ def python_topic_detail_view(request, pk=None):
     module = importlib.util.module_from_spec(spec)
     sys.modules[module_name] = module
     spec.loader.exec_module(module)
-    source_code = inspect.getsourcelines(module.some_function)
+    source_code = inspect.getsourcelines(module)
+    terminal = 0
 
     return render(
         request,
         "catalogue/topic_detail.html",
         context={
             "python_topic": python_topic,
-            "code": source_code
+            "code": source_code,
+            "terminal": terminal,
 
             }
         )
@@ -100,9 +104,14 @@ def python_topic_random_detail_view(request):
     # Grab random object
     topic_ids = PythonTopic.objects.values_list("id", flat=True)
     num_topic = len(topic_ids)
+    # No published topics condition
+    if num_topic == 0:
+        raise Http404("No topics were published yet.")
+
     ind = randint(0, num_topic-1)
     random_id = topic_ids[ind]
     python_topic = get_object_or_404(PythonTopic, pk=random_id)
+
     return render(
         request,
         "catalogue/topic_detail.html",
@@ -110,3 +119,21 @@ def python_topic_random_detail_view(request):
             "python_topic": python_topic,
             }
         )
+
+
+def sign_up(request):
+    if request.method == "POST":
+        print("tady")
+        form = CustomUserRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('/topics')
+    else:
+        print("here")
+        form = CustomUserRegistrationForm()
+
+    return render(request, "registration/sign_up.html", {
+        "form": form
+    })
+    
