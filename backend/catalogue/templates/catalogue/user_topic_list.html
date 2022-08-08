@@ -1,0 +1,48 @@
+{% extends 'catalogue/base.html' %}
+{% block title %}User Topic List{% endblock %}
+{% block main_body %}
+{% if user_topics%}
+    <section class="ml-3 mt-4 mb-1 px-4 mr-3">
+        <div class="card mt-1 border-5 pt-2 active pb-0 px-3 mb-4">
+            <div class="card-body ">
+                <div class="row">
+                    <div class="col-12 ">
+                        <h4 class="card-title "><b>{{user.username}}</b></h4>
+
+                    </div>
+                    <div class="col">
+                        <h6 class="card-subtitle mb-2 text-muted">
+                            <p class="card-text text-muted small ">
+                                Joined My Python Journey at {{user.date_joined}}</p>
+                            <p class="card-text text-muted small ">
+                                    This user has already published {{user_topics|length}} topics!</p>
+                        </h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="ml-3 mt-1 mb-1 px-4 mr-3">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for topic in user_topics %}
+            <div class="col">
+                <div class="card">
+                  {% load static %}
+                  <img src="{% static 'images/source_code.jpg' %}" class="card-img-top" alt="code">
+                  <div class="card-body">
+                    <h5 class="card-title">{{topic.topic_name}}</h5>
+                    <p class="card-text">{{topic.describtion|truncatewords:15}}</p>
+                    <a href="{% url 'topic-detail' topic.id %}" class="btn btn-primary stretched-link">Detail</a>
+                  </div>
+                  <div class="card-footer">
+                    <small class="text-muted">Last update was {{topic.last_edit|timesince}} ago</small>
+                  </div>            
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {%else%}
+        <p> Sorry, user haven't posted any topics yet...</p>
+    {%endif%}
+{% endblock  %}
