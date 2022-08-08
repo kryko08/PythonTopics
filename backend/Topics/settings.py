@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     # 3rd party 
     'crispy_forms',
     'crispy_bootstrap5',
+    'django_cleanup.apps.CleanupConfig'
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
@@ -134,3 +135,6 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+LOGIN_REDIRECT_URL = "/topics"
+LOGOUT_REDIRECT_URL = "/topics"
