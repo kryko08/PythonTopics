@@ -14,6 +14,7 @@ from Topics.settings import MEDIA_ROOT
 
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 
 import os
 import sys
@@ -139,6 +140,27 @@ def python_topic_random_detail_view(request):
             "python_topic": python_topic,
             }
         )
+
+
+class UserTopicsListView(ListView):
+    template_name = "catalogue/user_topic_list.html"
+    context_object_name = "user_topics"
+    queryset = PythonTopic.objects.all()
+
+    def get_queryset(self):
+        # Original queryset
+        qs = super().get_queryset()
+        pk = self.kwargs["pk"]
+        qs = qs.filter(user=pk)
+        return qs
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        pk = self.kwargs["pk"]
+        user = get_object_or_404(User, pk=pk)
+        context["user"] = user
+        return context
+
 
 
 def sign_up(request):
