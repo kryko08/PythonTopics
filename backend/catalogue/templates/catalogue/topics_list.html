@@ -11,8 +11,12 @@
                   <img src="{% static 'images/source_code.jpg' %}" class="card-img-top" alt="code">
                   <div class="card-body">
                     <h5 class="card-title">{{topic.topic_name}}</h5>
-                    <p class="card-text">{{topic.describtion}}</p>
-                    <a href="{% url 'topic-detail' topic.id %}" class="btn btn-primary stretched-link">Detail</a>
+                    <p class="card-text">{{topic.describtion|truncatewords:15}}</p>
+                    <br>
+                    <p class="card-text"> Published by <a href="{% url 'user-topic-list' topic.user.id%}"> {{topic.user.username}}</a>
+                    <br>
+                    <br>
+                    <a href="{% url 'topic-detail' topic.id %}" class="btn btn-primary">Detail</a>
                   </div>
                   <div class="card-footer">
                     <small class="text-muted">Last update was {{topic.last_edit|timesince}} ago</small>
