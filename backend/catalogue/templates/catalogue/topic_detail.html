@@ -1,6 +1,23 @@
 {% extends 'catalogue/base.html' %}
+{% block  styles %}{{ css }}{% endblock %}
 {%block main_body%}
-<div class="container-fluid">
-<p>TEst</p>
-</div>
+
+<section>
+    <div class="row">
+        <div class="col">
+            <div class="px-4 py-5">
+            <h2>{{ python_topic.topic_name}}</h2>
+            <p>{{ python_topic.describtion}}<p>
+            </div>
+        </div>
+        <div class="col">
+            <div class="bg-dark px-4 py-5">
+                {{code | safe}}
+            </div>
+        </div>
+    </div>
+</section>
+<section>
+</section>
+
 {% endblock %}
