@@ -6,6 +6,8 @@ from django.views.generic import (
 )
 from django.core.exceptions import PermissionDenied
 
+from django.utils import timezone
+from datetime import timedelta as td
 
 from .models import PythonTopic
 from .forms import PythonTopicForm, CustomUserRegistrationForm
@@ -25,6 +27,9 @@ from random import randint
 from ast import mod
 import operator
 
+from pygments import highlight
+from pygments.lexers import PythonLexer
+from pygments.formatters import HtmlFormatter
 
 class PythonTopicsListView(ListView):
     queryset = PythonTopic.objects.order_by("-last_edit")
@@ -33,11 +38,22 @@ class PythonTopicsListView(ListView):
 
 
 @login_required()
-def create_python_topic_view(request):
+def create_python_topic_view(request):    
     if request.method == 'POST':
+
+        # Users can only post topics once every 10 minutes
+        # Get the most recent Python topic
+        user_topics = PythonTopic.objects.filter(user=request.user).order_by("-created")
+        if len(user_topics) != 0 and not request.user.is_superuser:
+            last_topic = user_topics[0]
+            since_last_upload = timezone.now() - last_topic.created
+            under_10 = since_last_upload < td(minutes=10)
+            to_wait = td(minutes=10) - since_last_upload
+            if under_10:
+                return render(request, 'catalogue/too_soon.html', {"wait": to_wait})
+
         form = PythonTopicForm(request.POST, request.FILES)
         if form.is_valid():
-
             file = form.cleaned_data["python_file"]
             topic = form.cleaned_data["topic_name"]
             describtion = form.cleaned_data["describtion"]
@@ -106,17 +122,21 @@ def python_topic_detail_view(request, pk=None):
     module = importlib.util.module_from_spec(spec)
     sys.modules[module_name] = module
     spec.loader.exec_module(module)
-    source_code = inspect.getsourcelines(module)
-    terminal = 0
+    source_code = inspect.getsource(module)
+
+    # Style the code using pygments
+    lexer = PythonLexer()
+    formatter = HtmlFormatter(style="github-dark")
+    the_css = formatter.get_style_defs()
+    res = highlight(source_code, lexer, formatter)
 
     return render(
         request,
         "catalogue/topic_detail.html",
         context={
+            "css": the_css,
             "python_topic": python_topic,
-            "code": source_code,
-            "terminal": terminal,
-
+            "code": res
             }
         )
 
@@ -177,5 +197,4 @@ def sign_up(request):
 
     return render(request, "registration/sign_up.html", {
         "form": form
-    })
-    
+    })    

@@ -6,7 +6,7 @@ from .views import (
     update_python_topic_view,
     python_topic_detail_view,
     python_topic_random_detail_view,
-    UserTopicsListView
+    UserTopicsListView,
     )
 
 
@@ -17,6 +17,6 @@ urlpatterns = [
         path('<int:pk>/detail/', python_topic_detail_view, name="topic-detail"),
         path('<int:pk>/update/', update_python_topic_view, name="topic-update"),
         path("random_topic/", python_topic_random_detail_view, name="topic-random"),
-        path('users/<int:pk>/', UserTopicsListView.as_view(), name="user-topic-list")
+        path('users/<int:pk>/', UserTopicsListView.as_view(), name="user-topic-list"),
     ])),
 ]
